@@ -6,7 +6,7 @@
 }
 a {
   text-decoration: none;
-  color: aliceblue;
+  color: black;
 }
 #navbar {
   display: flex;
@@ -23,7 +23,7 @@ a {
   letter-spacing: 0.1rem;
 }
 .left div a span {
-  color: aliceblue;
+  color: black;
   font-size: 23px;
 }
 .right ul {
