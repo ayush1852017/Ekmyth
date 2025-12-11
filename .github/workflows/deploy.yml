@@ -35,4 +35,9 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Deploy to S3
-        run: aws s3 sync dist/ s3://${{ secrets.AWS_S3_BUCKET }} --delete
+        run: |
+          # Upload assets with long cache duration (1 year)
+          aws s3 sync dist/ s3://${{ secrets.AWS_S3_BUCKET }} --exclude "index.html" --delete --cache-control "max-age=31536000,public"
+          
+          # Upload index.html with no caching to ensure updates are seen immediately
+          aws s3 cp dist/index.html s3://${{ secrets.AWS_S3_BUCKET }}/index.html --cache-control "max-age=0,no-cache,no-store,must-revalidate"
