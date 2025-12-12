@@ -1,0 +1,151 @@
+/* Navbar */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--color-divider);
+}
+
+.navbar-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Forms */
+.submit-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-divider);
+    /* border-bottom: 4px solid var(--color-divider); */
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-divider);
+    background: var(--color-surface-hover);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink-black);
+    transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    background: white;
+    border-color: var(--color-truth-blue);
+    box-shadow: 0 0 0 4px rgba(28, 176, 246, 0.2);
+    /* Juicy focus ring */
+}
+
+/* Animations */
+.scanning-orb {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #a5c3ff, var(--color-truth-blue));
+    box-shadow: 0 0 20px var(--color-truth-blue);
+    animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px var(--color-truth-blue);
+    }
+
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 40px var(--color-truth-blue);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px var(--color-truth-blue);
+    }
+}
+
+/* Hero Section */
+/* Removed specific hero styles as they are now inline or utility driven in Home.tsx */
+
+/* Home Grid & Categories */
+.home-container {
+    max-width: 800px;
+    /* Streamlined feed width */
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.category-scroll {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding: 0.5rem 0 1rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.category-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.category-btn {
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--color-divider);
+    border-bottom-width: 4px;
+    background: white;
+    color: var(--color-text-secondary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.1s;
+    white-space: nowrap;
+}
+
+.category-btn:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+.category-btn.active {
+    background: var(--color-truth-blue);
+    border-color: var(--depth-blue);
+    color: white;
+}
+
+.grid-layout {
+    display: flex;
+    flex-direction: column;
+    /* Mobile-first feed aspect */
+    gap: 1.5rem;
+}

@@ -1,0 +1,70 @@
+:root {
+  /* Brand Colors - Duolingo Inspired */
+  --color-truth-blue: #1CB0F6;
+  /* Vibrant Blue */
+  --color-myth-red: #FF4B4B;
+  /* Pop Red */
+  --color-verified-green: #58CC02;
+  /* Success Green */
+  --color-curiosity-yellow: #FFC800;
+  /* Warning/Gold */
+  --color-purple: #CE82FF;
+  /* Accent */
+
+  /* Text Colors */
+  --color-ink-black: #3C3C3C;
+  --color-text-primary: #3C3C3C;
+  /* Soft Black */
+  --color-text-secondary: #777777;
+  /* Soft Grey */
+  --color-text-light: #A5A5A5;
+
+  /* UI Surfaces */
+  --color-background: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F7F7F7;
+  --color-divider: #E5E5E5;
+
+  /* Button/Card Depths (The 'Juicy' 3D effect border) */
+  --depth-blue: #1899D6;
+  --depth-red: #EA2B2B;
+  --depth-green: #46A302;
+  --depth-yellow: #E5B420;
+  --depth-grey: #E5E5E5;
+
+  /* Shadows - Minimal, mostly rely on depth borders */
+  --shadow-sm: 0 2px 0 var(--color-divider);
+  --shadow-md: 0 4px 0 var(--color-divider);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.05);
+
+  /* Typography */
+  --font-primary: 'Nunito', 'Segoe UI Rounded', sans-serif;
+  /* Rounded, Friendly */
+
+  /* Spacing & Radius */
+  --radius-sm: 0.75rem;
+  /* 12px */
+  --radius-md: 1rem;
+  /* 16px */
+  --radius-lg: 1.25rem;
+  /* 20px */
+  --radius-xl: 2rem;
+  /* 32px */
+
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+}
+
+/* Dark Mode Overrides (Optional foundation) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #0B0D11;
+    --color-surface: #1E2025;
+    --color-divider: #2D3139;
+    --color-text-primary: #FFFFFF;
+    --color-text-secondary: #A0A4AB;
+  }
+}

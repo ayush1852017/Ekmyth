@@ -1,87 +1,89 @@
 import React from 'react';
-import { MythSubmission, VerdictType } from '../types';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ThumbsUp, MessageCircle, Bookmark, Share2 } from 'lucide-react';
+import { VerdictBadge, Verdict } from './VerdictBadge';
+
+export interface Myth {
+  id: string;
+  title: string;
+  verdict: Verdict;
+  category: string;
+  votes: number;
+  comments: number;
+  bookmarked: boolean;
+  username: string;
+  confidence: number;
+  snippet?: string;
+}
 
 interface MythCardProps {
-  myth: MythSubmission;
+  myth: Myth;
+  onVote: (id: string, type: 'up' | 'down') => void;
+  onBookmark: (id: string) => void;
   onClick: (id: string) => void;
 }
 
-const MythCard: React.FC<MythCardProps> = ({ myth, onClick }) => {
-  const getVerdictStyle = (verdict: VerdictType) => {
-    switch (verdict) {
-      case VerdictType.VERIFIED:
-        return 'bg-truth-500 text-white';
-      case VerdictType.BUSTED:
-        return 'bg-myth-500 text-white'; // Means the "Fact" proposed was wrong
-      case VerdictType.PARTIALLY_TRUE:
-        return 'bg-yellow-500 text-white';
-      default:
-        return 'bg-gray-400 text-white';
-    }
-  };
-
-  const getVerdictLabel = (verdict: VerdictType) => {
-    switch (verdict) {
-      case VerdictType.VERIFIED:
-        return 'VERIFIED FACT';
-      case VerdictType.BUSTED:
-        return 'FALSE CLAIM';
-      case VerdictType.PARTIALLY_TRUE:
-        return 'COMPLEX';
-      default:
-        return 'UNCERTAIN';
-    }
-  };
-
+export const MythCard: React.FC<MythCardProps> = ({ myth, onVote, onBookmark, onClick }) => {
   return (
-    <div 
-      className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
-      onClick={() => onClick(myth.id)}
-    >
-      <div className="p-6">
-        <div className="flex justify-between items-start mb-4">
-          <span className={`px-2 py-1 rounded text-xs font-bold tracking-wider ${getVerdictStyle(myth.aiVerdict)}`}>
-            {getVerdictLabel(myth.aiVerdict)}
-          </span>
-          <span className="text-gray-400 text-xs">
-            {new Date(myth.submittedAt).toLocaleDateString()}
-          </span>
-        </div>
-
-        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-brand-600 transition-colors">
-          {myth.title}
-        </h3>
-
-        <div className="space-y-3 mb-4">
-          <div className="bg-red-50 p-3 rounded-lg border-l-4 border-myth-500">
-            <p className="text-xs font-bold text-myth-500 uppercase mb-1">Myth</p>
-            <p className="text-gray-800 text-sm line-clamp-2">{myth.mythClaim}</p>
-          </div>
-          <div className="bg-green-50 p-3 rounded-lg border-l-4 border-truth-500">
-            <p className="text-xs font-bold text-truth-500 uppercase mb-1">Reality</p>
-            <p className="text-gray-800 text-sm line-clamp-2">{myth.factReality}</p>
+    <Card className="hover:shadow-lg transition-shadow cursor-pointer border-border">
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1" onClick={() => onClick(myth.id)}>
+            <h3 className="font-semibold text-foreground mb-2 text-lg">{myth.title}</h3>
+            <div className="flex items-center gap-2 mb-2">
+              <VerdictBadge verdict={myth.verdict} />
+              <Badge variant="outline" className="text-xs">{myth.category}</Badge>
+            </div>
+            <p className="text-sm text-muted-foreground">by {myth.username}</p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-4 text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <i className="fa-solid fa-robot text-brand-500"></i>
-            <span className="font-medium">AI Confidence: {myth.aiConfidenceScore}%</span>
-          </div>
+        <div className="flex items-center justify-between pt-3 border-t border-border">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 hover:text-brand-600">
-              <i className="fa-regular fa-comment"></i>
-              {myth.comments.length}
-            </span>
-            <span className="flex items-center gap-1 hover:text-brand-600">
-              <i className="fa-solid fa-arrow-up"></i>
-              {myth.upvotes}
-            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 h-8"
+              onClick={(e) => {
+                e.stopPropagation();
+                onVote(myth.id, 'up');
+              }}
+            >
+              <ThumbsUp className="w-4 h-4" />
+              <span className="text-xs">{myth.votes}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1 h-8"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-xs">{myth.comments}</span>
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                onBookmark(myth.id);
+              }}
+            >
+              <Bookmark className={`w-4 h-4 ${myth.bookmarked ? 'fill-current' : ''}`} />
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
+              <Share2 className="w-4 h-4" />
+            </Button>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
-
-export default MythCard;

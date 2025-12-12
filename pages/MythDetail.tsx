@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MythSubmission, VerdictType, Comment } from '../types';
+import { MythSubmission, VerdictType } from '../types';
 
 interface MythDetailProps {
   myth: MythSubmission;
@@ -16,152 +16,177 @@ const MythDetail: React.FC<MythDetailProps> = ({ myth, onBack, onAddComment }) =
     setNewComment('');
   };
 
-  const getVerdictBadge = (verdict: VerdictType) => {
-    const baseClasses = "px-3 py-1 rounded-full text-sm font-bold tracking-wide flex items-center gap-2 w-fit";
+  const getVerdictLabel = (verdict: VerdictType) => {
     switch (verdict) {
-      case VerdictType.VERIFIED:
-        return <div className={`${baseClasses} bg-truth-500 text-white`}><i className="fa-solid fa-check"></i> VERIFIED FACT</div>;
-      case VerdictType.BUSTED:
-        return <div className={`${baseClasses} bg-myth-500 text-white`}><i className="fa-solid fa-xmark"></i> DEBUNKED MYTH</div>;
-      default:
-        return <div className={`${baseClasses} bg-gray-500 text-white`}><i className="fa-solid fa-scale-balanced"></i> {verdict}</div>;
+      case VerdictType.VERIFIED: return 'VERIFIED FACT';
+      case VerdictType.BUSTED: return 'BUSTED MYTH';
+      case VerdictType.PARTIALLY_TRUE: return 'COMPLEX';
+      default: return 'UNCERTAIN';
+    }
+  };
+
+  const getVerdictClass = (verdict: VerdictType) => {
+    switch (verdict) {
+      case VerdictType.VERIFIED: return 'badge-verified';
+      case VerdictType.BUSTED: return 'badge-busted';
+      default: return 'badge-pending';
+    }
+  };
+
+  const getDomain = (url: string) => {
+    try {
+      return new URL(url).hostname.replace('www.', '');
+    } catch {
+      return 'Source';
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div style={{minHeight: '100vh', padding: '2rem 1rem 6rem'}}>
+      <div className="home-container" style={{background: 'none', boxShadow: 'none', padding: 0}}>
         <button 
           onClick={onBack}
-          className="mb-6 text-gray-500 hover:text-brand-600 transition-colors flex items-center gap-2 font-medium"
+          className="btn btn-secondary"
+          style={{marginBottom: '1.5rem', border: 'none', paddingLeft: 0, justifyContent: 'flex-start', background: 'transparent', boxShadow: 'none'}}
         >
-          <i className="fa-solid fa-arrow-left"></i> Back to Feed
+          <i className="fas fa-arrow-left" style={{ marginRight: '0.5rem' }}></i> Back to Stream
         </button>
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+        <div className="card" style={{padding: '0', overflow: 'hidden', borderBottomWidth: '6px' }}>
           {/* Header */}
-          <div className="p-8 border-b border-gray-100">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-              {getVerdictBadge(myth.aiVerdict)}
-              <div className="text-sm text-gray-500 flex items-center gap-4">
-                 <span><i className="fa-regular fa-clock mr-1"></i> {new Date(myth.submittedAt).toLocaleDateString()}</span>
-                 <span><i className="fa-regular fa-folder mr-1"></i> {myth.category}</span>
+          <div style={{padding: '2rem', borderBottom: '2px solid var(--color-divider)'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem'}}>
+              <span className={`badge ${getVerdictClass(myth.aiVerdict)}`} style={{fontSize: '1rem', padding: '0.5rem 1rem'}}>
+                {getVerdictLabel(myth.aiVerdict)}
+              </span>
+              <div style={{color: 'var(--color-text-secondary)', fontSize: '0.9rem', display: 'flex', gap: '1rem', fontWeight: 600}}>
+                 <span><i className="far fa-calendar-alt"></i> {new Date(myth.submittedAt).toLocaleDateString()}</span>
+                 <span>#{myth.category}</span>
               </div>
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">{myth.title}</h1>
+            <h1 style={{fontSize: '2rem', fontWeight: 800, marginBottom: '1.5rem', lineHeight: 1.2, color: 'var(--color-ink-black)' }}>{myth.title}</h1>
             
             {/* The Comparison */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-red-50 p-6 rounded-xl border border-red-100">
-                 <h3 className="text-myth-500 font-bold uppercase tracking-wider mb-3 text-sm flex items-center gap-2">
-                   <i className="fa-solid fa-triangle-exclamation"></i> The Myth
-                 </h3>
-                 <p className="text-gray-800 text-lg leading-relaxed font-medium">
-                   "{myth.mythClaim}"
-                 </p>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem'}}>
+              <div className="comparison-box myth">
+                 <h3 className="comparison-label" style={{fontSize: '1rem', marginBottom: '0.5rem'}}>THE MYTH</h3>
+                 <p style={{fontSize: '1.1rem', lineHeight: 1.6}}>"{myth.mythClaim}"</p>
               </div>
-              <div className="bg-green-50 p-6 rounded-xl border border-green-100 relative overflow-hidden">
-                 <div className="absolute top-0 right-0 p-4 opacity-10">
-                   <i className="fa-solid fa-check-double text-6xl text-truth-600"></i>
-                 </div>
-                 <h3 className="text-truth-600 font-bold uppercase tracking-wider mb-3 text-sm flex items-center gap-2">
-                   <i className="fa-solid fa-lightbulb"></i> The Reality
-                 </h3>
-                 <p className="text-gray-800 text-lg leading-relaxed relative z-10">
-                   {myth.factReality}
-                 </p>
+              <div className="comparison-box fact">
+                 <h3 className="comparison-label" style={{fontSize: '1rem', marginBottom: '0.5rem'}}>THE REALITY</h3>
+                 <p style={{fontSize: '1.1rem', lineHeight: 1.6}}>{myth.factReality}</p>
               </div>
             </div>
           </div>
 
           {/* AI Analysis Section */}
-          <div className="bg-slate-50 p-8 border-b border-gray-200">
-            <div className="flex items-center gap-2 mb-4">
-              <i className="fa-solid fa-robot text-brand-600 text-xl"></i>
-              <h3 className="text-lg font-bold text-gray-900">AI Verification Report</h3>
+          <div style={{padding: '2rem', background: 'var(--color-background)', borderBottom: '2px solid var(--color-divider)'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem'}}>
+              <div style={{ padding: '0.5rem', background: 'var(--color-truth-blue)', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px' }}>
+                  <i className="fas fa-robot"></i>
+              </div>
+              <h3 style={{fontSize: '1.25rem', fontWeight: 800}}>AI Verification Report</h3>
             </div>
-            <div className="prose prose-sm max-w-none text-gray-600 bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-              <p className="font-medium text-gray-800 mb-2">Verdict Reason:</p>
-              <p>{myth.aiReasoning}</p>
+            
+            <div style={{background: 'var(--color-surface)', padding: '1.5rem', borderRadius: 'var(--radius-md)', border: '2px solid var(--color-divider)'}}>
+              <p style={{marginBottom: '1rem', lineHeight: 1.6, color: 'var(--color-ink-black)'}}>{myth.aiReasoning}</p>
               
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <div className="flex items-center justify-between text-xs text-gray-500 uppercase tracking-wide font-bold">
-                   <span>Trust Score</span>
+              <div style={{marginTop: '1.5rem', paddingTop: '1rem', borderTop: '2px dashed var(--color-divider)'}}>
+                <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontWeight: 800, fontSize: '0.9rem', color: 'var(--color-text-secondary)'}}>
+                   <span>TRUST SCORE</span>
                    <span>{myth.aiConfidenceScore}/100</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <div style={{width: '100%', height: '12px', background: 'var(--color-divider)', borderRadius: '999px', overflow: 'hidden'}}>
                   <div 
-                    className="bg-brand-500 h-2 rounded-full transition-all duration-1000" 
-                    style={{ width: `${myth.aiConfidenceScore}%` }}
+                    style={{
+                      height: '100%', 
+                      background: 'var(--color-truth-blue)', 
+                      width: `${myth.aiConfidenceScore}%`,
+                      transition: 'width 1s ease',
+                      borderRadius: '999px'
+                    }}
                   ></div>
                 </div>
               </div>
             </div>
 
             {/* Sources */}
-            <div className="mt-6">
-               <h4 className="text-sm font-bold text-gray-700 mb-3 uppercase tracking-wider">Reference Sources</h4>
-               <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div style={{marginTop: '2rem'}}>
+               <h4 style={{fontSize: '0.9rem', fontWeight: 800, color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: '1rem'}}>Reference Sources</h4>
+               <ul style={{display: 'grid', gap: '0.75rem'}}>
                  {[...myth.userSources, ...(myth.aiSuggestedSources || []).map(s => s.url)].map((src, idx) => (
                    src && (
-                    <li key={idx} className="flex items-center gap-2 text-sm text-brand-600 bg-white px-3 py-2 rounded border border-gray-200 hover:border-brand-300 transition-colors">
-                      <i className="fa-solid fa-link text-gray-400"></i>
-                      <a href={src} target="_blank" rel="noreferrer" className="truncate hover:underline">
-                        {src}
+                    <li key={idx}>
+                      <a href={src} target="_blank" rel="noreferrer" className="btn btn-secondary" style={{
+                          display: 'flex', 
+                          justifyContent: 'flex-start',
+                          padding: '1rem', 
+                          borderRadius: 'var(--radius-md)', 
+                          textAlign: 'left',
+                          width: '100%',
+                          fontSize: '0.95rem',
+                          textTransform: 'none',
+                          fontWeight: 600
+                      }}>
+                        <i className="fas fa-external-link-alt" style={{ marginRight: '0.75rem', color: 'var(--color-text-secondary)' }}></i>
+                        <div>
+                            <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', marginBottom: '2px' }}>{getDomain(src)}</div>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>Read Full Article</div>
+                        </div>
                       </a>
                     </li>
                    )
                  ))}
                  {myth.userSources.length === 0 && (!myth.aiSuggestedSources || myth.aiSuggestedSources.length === 0) && (
-                   <li className="text-sm text-gray-400 italic">No external sources linked.</li>
+                   <li style={{color: 'var(--color-text-tertiary)', fontStyle: 'italic'}}>No external sources linked.</li>
                  )}
                </ul>
             </div>
           </div>
 
           {/* Discussion */}
-          <div className="p-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-6">Discussion ({myth.comments.length})</h3>
+          <div style={{padding: '2rem'}}>
+            <h3 style={{fontSize: '1.5rem', fontWeight: 800, marginBottom: '1.5rem'}}>Discussion ({myth.comments.length})</h3>
             
-            <div className="mb-8 flex gap-4">
-              <div className="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 font-bold flex-shrink-0">
-                U
+            <div style={{display: 'flex', gap: '1rem', marginBottom: '2rem'}}>
+              <div style={{width: '48px', height: '48px', borderRadius: '50%', background: 'var(--color-divider)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                 <i className="fas fa-user" style={{ color: 'var(--color-text-light)' }}></i>
               </div>
-              <div className="flex-1">
+              <div style={{flex: 1}}>
                 <textarea
-                  className="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition-shadow"
-                  rows={2}
-                  placeholder="Join the discussion... Be respectful."
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="Join the discussion..."
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
+                  style={{ marginBottom: '0.5rem' }}
                 />
-                <div className="flex justify-end mt-2">
-                  <button 
-                    onClick={handlePostComment}
-                    disabled={!newComment.trim()}
-                    className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
+                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                  <button onClick={handlePostComment} disabled={!newComment.trim()} className="btn btn-primary">
                     Post Comment
                   </button>
                 </div>
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div style={{display: 'flex', flexDirection: 'column', gap: '1.5rem'}}>
               {myth.comments.length === 0 ? (
-                <p className="text-center text-gray-400 py-4">No comments yet. Be the first!</p>
+                <div style={{ padding: '2rem', textAlign: 'center', background: 'var(--color-surface-hover)', borderRadius: 'var(--radius-md)' }}>
+                    <p style={{color: 'var(--color-text-secondary)', fontWeight: 600 }}>No comments yet.</p>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--color-text-tertiary)' }}>Be the first to share your thoughts!</p>
+                </div>
               ) : (
                 myth.comments.map((comment) => (
-                  <div key={comment.id} className="flex gap-4 animate-fade-in">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold text-xs flex-shrink-0">
+                  <div key={comment.id} style={{display: 'flex', gap: '1rem'}}>
+                    <div style={{width: '40px', height: '40px', borderRadius: '50%', background: 'var(--color-divider)', color: 'var(--color-text-secondary)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', fontWeight: 800}}>
                       {comment.author.charAt(0)}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-bold text-sm text-gray-900">{comment.author}</span>
-                        <span className="text-xs text-gray-400">{new Date(comment.timestamp).toLocaleDateString()}</span>
+                    <div style={{ background: 'var(--color-surface-hover)', padding: '1rem', borderRadius: 'var(--radius-md)', flex: 1 }}>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem'}}>
+                        <span style={{fontWeight: 800, color: 'var(--color-ink-black)'}}>{comment.author}</span>
+                        <span style={{color: 'var(--color-text-secondary)', fontSize: '0.75rem', fontWeight: 600}}>{new Date(comment.timestamp).toLocaleDateString()}</span>
                       </div>
-                      <p className="text-gray-700 text-sm">{comment.text}</p>
+                      <p style={{lineHeight: 1.5, color: 'var(--color-text-primary)'}}>{comment.text}</p>
                     </div>
                   </div>
                 ))
