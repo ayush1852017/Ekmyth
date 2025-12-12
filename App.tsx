@@ -217,8 +217,10 @@ const MythCard = ({ myth, compact = false }: { myth: Myth, compact?: boolean }) 
 
 // --- PAGES ---
 
+// --- PAGES ---
+
 const HomePage = () => {
-  const { myths, searchQuery } = useContext(AppContext)!;
+  const { myths, searchQuery, setSearchQuery } = useContext(AppContext)!;
   const filteredMyths = myths.filter(m => m.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
@@ -233,6 +235,17 @@ const HomePage = () => {
           <RavenMascot variant="idle" message="Question everything." />
           <Button variant="ghost" size="icon"><Bell className="w-5 h-5" /></Button>
         </div>
+      </div>
+
+      {/* Search Input */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Input 
+          placeholder="Search for myths..." 
+          className="pl-10 bg-muted/40 border-border/60"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
       {/* Trending Card */}
@@ -256,16 +269,24 @@ const HomePage = () => {
             <Flame className="w-4 h-4 text-orange-500" /> TruthStream Feed
           </h2>
         </div>
-        {filteredMyths.map((myth) => (
-          <MythCard key={myth.id} myth={myth} />
-        ))}
+        {filteredMyths.length > 0 ? (
+          filteredMyths.map((myth) => (
+            <MythCard key={myth.id} myth={myth} />
+          ))
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>No myths found matching "{searchQuery}"</p>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 const ExplorePage = () => {
+  const { myths } = useContext(AppContext)!;
   const categories = ['History', 'Science', 'Health', 'Tech', 'Culture', 'Politics'];
+  
   return (
     <div className="space-y-6 pb-24 pt-4">
       <div className="flex items-center gap-3 bg-muted/50 p-2 rounded-lg">
@@ -288,6 +309,18 @@ const ExplorePage = () => {
               </CardContent>
             </Card>
           </motion.div>
+        ))}
+      </div>
+
+      {/* Restored Feed List */}
+      <div className="space-y-4 pt-4 border-t border-border/40">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Compass className="w-4 h-4 text-primary" /> Discover More
+          </h2>
+        </div>
+        {myths.slice(0, 5).map((myth) => (
+          <MythCard key={myth.id} myth={myth} />
         ))}
       </div>
     </div>
@@ -511,6 +544,16 @@ export default function App() {
   const [myths, setMyths] = useState<Myth[]>([
     { id: '1', title: 'Drinking 8 glasses of water daily is essential', verdict: 'needs-evidence', category: 'Health', votes: 142, comments: 23, bookmarked: false, username: 'TruthSeeker', confidence: 65 },
     { id: '2', title: 'The Great Wall of China is visible from space', verdict: 'busted', category: 'History', votes: 289, comments: 45, bookmarked: true, username: 'MythBuster', confidence: 95 },
+    { id: '3', title: 'Eating carrots gives you night vision', verdict: 'busted', category: 'Health', votes: 850, comments: 120, bookmarked: false, username: 'Visionary', confidence: 99 },
+    { id: '4', title: 'Humans only use 10% of their brains', verdict: 'busted', category: 'Science', votes: 1200, comments: 340, bookmarked: true, username: 'NeuroNerd', confidence: 98 },
+    { id: '5', title: 'Sugar causes hyperactivity in children', verdict: 'needs-evidence', category: 'Health', votes: 432, comments: 89, bookmarked: false, username: 'ParentalGuide', confidence: 60 },
+    { id: '6', title: 'Napoleon was short', verdict: 'busted', category: 'History', votes: 670, comments: 55, bookmarked: false, username: 'HistoryBuff', confidence: 92 },
+    { id: '7', title: 'Bulls are enraged by the color red', verdict: 'busted', category: 'Science', votes: 340, comments: 28, bookmarked: false, username: 'FactFinder', confidence: 96 },
+    { id: '8', title: 'Vikings wore horned helmets', verdict: 'busted', category: 'History', votes: 560, comments: 76, bookmarked: true, username: 'NorseMyth', confidence: 97 },
+    { id: '9', title: 'Goldfish have a 3-second memory', verdict: 'busted', category: 'Science', votes: 890, comments: 112, bookmarked: false, username: 'BioGeek', confidence: 94 },
+    { id: '10', title: 'Cracking knuckles causes arthritis', verdict: 'busted', category: 'Health', votes: 1500, comments: 230, bookmarked: true, username: 'KnuckleCracker', confidence: 99 },
+    { id: '11', title: 'Lightning never strikes the same place twice', verdict: 'busted', category: 'Science', votes: 780, comments: 90, bookmarked: false, username: 'StormChaser', confidence: 98 },
+    { id: '12', title: 'Bats are blind', verdict: 'busted', category: 'Science', votes: 450, comments: 45, bookmarked: false, username: 'BatMan', confidence: 95 },
   ]);
   const [searchQuery, setSearchQuery] = useState('');
 
